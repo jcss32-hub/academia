@@ -1,0 +1,91 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Aluno {
+  id              Int       @id @default(autoincrement())
+  nome            String
+  email           String    @unique
+  telefone        String?
+  data_nascimento DateTime?
+  criado_em       DateTime  @default(now())
+
+  contratacoes Contratacao[]
+  fichas       FichaTreino[]
+}
+
+model Instrutor {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  telefone  String?
+  criado_em DateTime @default(now())
+
+  fichas FichaTreino[]
+}
+
+model Plano {
+  id           Int     @id @default(autoincrement())
+  nome         String
+  descricao    String?
+  valor        Decimal @db.Decimal(10, 2)
+  duracao_dias Int
+  ativo        Boolean @default(true)
+
+  contratacoes Contratacao[]
+}
+
+model Contratacao {
+  id          Int      @id @default(autoincrement())
+  id_aluno    Int
+  id_plano    Int
+  data_inicio DateTime
+  data_fim    DateTime
+  status      String   @default("ATIVA")
+
+  aluno Aluno @relation(fields: [id_aluno], references: [id])
+  plano Plano @relation(fields: [id_plano], references: [id])
+}
+
+model Exercicio {
+  id             Int     @id @default(autoincrement())
+  nome           String
+  descricao      String?
+  grupo_muscular String?
+  ativo          Boolean @default(true)
+
+  itens_ficha ItemFicha[]
+}
+
+model FichaTreino {
+  id           Int      @id @default(autoincrement())
+  id_aluno     Int
+  id_instrutor Int
+  nome         String
+  data_criacao DateTime @default(now())
+  observacoes  String?
+
+  aluno     Aluno       @relation(fields: [id_aluno], references: [id])
+  instrutor Instrutor   @relation(fields: [id_instrutor], references: [id])
+  itens     ItemFicha[]
+}
+
+model ItemFicha {
+  id                Int      @id @default(autoincrement())
+  id_ficha          Int
+  id_exercicio      Int
+  series            Int
+  repeticoes        Int
+  carga_recomendada Decimal? @db.Decimal(6, 2)
+  ordem             Int
+
+  ficha     FichaTreino @relation(fields: [id_ficha], references: [id])
+  exercicio Exercicio   @relation(fields: [id_exercicio], references: [id])
+}
