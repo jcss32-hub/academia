@@ -1,6 +1,12 @@
 
 import Fastify from 'fastify'
 import alunosRoutes from './routes/alunos.js'
+import instrutoresRoutes from './routes/instrutores.js'
+import planosRoutes from './routes/planos.js'
+import contratacoesRoutes from './routes/contratacoes.js'
+import exerciciosRoutes from './routes/exercicios.js'
+import fichasTreinoRoutes from './routes/fichas-treino.js'
+import itensFichaRoutes from './routes/itens-ficha.js'
 
 const app = Fastify({
   logger: true,
@@ -18,6 +24,12 @@ app.get('/ping', async () => {
 const start = async () => {
   try {
     await app.register(alunosRoutes)
+    await app.register(instrutoresRoutes)
+    await app.register(planosRoutes)
+    await app.register(contratacoesRoutes)
+    await app.register(exerciciosRoutes)
+    await app.register(fichasTreinoRoutes)
+    await app.register(itensFichaRoutes)
     await app.listen({
       port: 3000,
       host: '0.0.0.0'
