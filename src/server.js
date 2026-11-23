@@ -2,6 +2,7 @@
 import Fastify from 'fastify'
 import alunosRoutes from './routes/alunos.js'
 import instrutoresRoutes from './routes/instrutores.js'
+import planosRoutes from './routes/planos.js'
 
 const app = Fastify({
   logger: true,
@@ -20,6 +21,7 @@ const start = async () => {
   try {
     await app.register(alunosRoutes)
     await app.register(instrutoresRoutes)
+    await app.register(planosRoutes)
     await app.listen({
       port: 3000,
       host: '0.0.0.0'
