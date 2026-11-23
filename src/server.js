@@ -1,6 +1,7 @@
 
 import Fastify from 'fastify'
 import alunosRoutes from './routes/alunos.js'
+import instrutoresRoutes from './routes/instrutores.js'
 
 const app = Fastify({
   logger: true,
@@ -18,6 +19,7 @@ app.get('/ping', async () => {
 const start = async () => {
   try {
     await app.register(alunosRoutes)
+    await app.register(instrutoresRoutes)
     await app.listen({
       port: 3000,
       host: '0.0.0.0'
