@@ -187,3 +187,30 @@ export const fichaTreinoParcial = {
   minProperties: 1,
   properties: camposFichaTreino,
 };
+
+
+// Campos permitidos para cadastrar ou atualizar um item de ficha
+export const camposItemFicha = {
+  id_ficha: { type: "integer", minimum: 1 },
+  id_exercicio: { type: "integer", minimum: 1 },
+  series: { type: "integer", minimum: 1 },
+  repeticoes: { type: "integer", minimum: 1 },
+  carga_recomendada: { type: ["number", "null"], minimum: 0 },
+  ordem: { type: "integer", minimum: 1 },
+};
+
+// Cadastro e substituição completos
+export const itemFichaCompleto = {
+  type: "object",
+  additionalProperties: false,
+  required: ["id_ficha", "id_exercicio", "series", "repeticoes", "ordem"],
+  properties: camposItemFicha,
+};
+
+// Atualização parcial
+export const itemFichaParcial = {
+  type: "object",
+  additionalProperties: false,
+  minProperties: 1,
+  properties: camposItemFicha,
+};
