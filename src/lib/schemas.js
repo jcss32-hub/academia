@@ -111,3 +111,29 @@ export const planoParcial = {
   minProperties: 1,
   properties: camposPlano,
 };
+
+
+// Campos permitidos para uma contratação. Os IDs apontam para Aluno e Plano.
+export const camposContratacao = {
+  id_aluno: { type: "integer", minimum: 1 },
+  id_plano: { type: "integer", minimum: 1 },
+  data_inicio: { type: "string", format: "date-time" },
+  data_fim: { type: "string", format: "date-time" },
+  status: { type: "string", minLength: 1 },
+};
+
+// Cadastro e substituição completos
+export const contratacaoCompleta = {
+  type: "object",
+  additionalProperties: false,
+  required: ["id_aluno", "id_plano", "data_inicio", "data_fim"],
+  properties: camposContratacao,
+};
+
+// Atualização parcial
+export const contratacaoParcial = {
+  type: "object",
+  additionalProperties: false,
+  minProperties: 1,
+  properties: camposContratacao,
+};
