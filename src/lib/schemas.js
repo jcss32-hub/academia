@@ -73,3 +73,41 @@ export const instrutorParcial = {
   minProperties: 1,
   properties: camposInstrutor,
 };
+
+// Campos permitidos para cadastrar um plano
+export const camposPlano = {
+  nome: {
+    type: "string",
+    minLength: 1,
+  },
+  descricao: {
+    type: "string",
+  },
+  valor: {
+    type: "number",
+    minimum: 0,
+  },
+  duracao_dias: {
+    type: "integer",
+    minimum: 1,
+  },
+  ativo: {
+    type: "boolean",
+  },
+};
+
+// Cadastro completo
+export const planoCompleto = {
+  type: "object",
+  additionalProperties: false,
+  required: ["nome", "valor", "duracao_dias"],
+  properties: camposPlano,
+};
+
+// Atualização parcial
+export const planoParcial = {
+  type: "object",
+  additionalProperties: false,
+  minProperties: 1,
+  properties: camposPlano,
+};
