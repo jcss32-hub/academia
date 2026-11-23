@@ -162,3 +162,28 @@ export const exercicioParcial = {
   minProperties: 1,
   properties: camposExercicio,
 };
+
+
+// Campos permitidos para cadastrar ou atualizar uma ficha de treino
+export const camposFichaTreino = {
+  id_aluno: { type: "integer", minimum: 1 },
+  id_instrutor: { type: "integer", minimum: 1 },
+  nome: { type: "string", minLength: 1 },
+  observacoes: { type: "string" },
+};
+
+// Cadastro e substituição completos
+export const fichaTreinoCompleta = {
+  type: "object",
+  additionalProperties: false,
+  required: ["id_aluno", "id_instrutor", "nome"],
+  properties: camposFichaTreino,
+};
+
+// Atualização parcial
+export const fichaTreinoParcial = {
+  type: "object",
+  additionalProperties: false,
+  minProperties: 1,
+  properties: camposFichaTreino,
+};
