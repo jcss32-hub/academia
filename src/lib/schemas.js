@@ -137,3 +137,28 @@ export const contratacaoParcial = {
   minProperties: 1,
   properties: camposContratacao,
 };
+
+
+// Campos permitidos para cadastrar ou atualizar um exercício
+export const camposExercicio = {
+  nome: { type: "string", minLength: 1 },
+  descricao: { type: "string" },
+  grupo_muscular: { type: "string", minLength: 1 },
+  ativo: { type: "boolean" },
+};
+
+// Cadastro e substituição completos
+export const exercicioCompleto = {
+  type: "object",
+  additionalProperties: false,
+  required: ["nome"],
+  properties: camposExercicio,
+};
+
+// Atualização parcial
+export const exercicioParcial = {
+  type: "object",
+  additionalProperties: false,
+  minProperties: 1,
+  properties: camposExercicio,
+};
