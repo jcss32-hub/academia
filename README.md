@@ -1,200 +1,118 @@
-# 🏋️ Academia — Sistema de Gerenciamento
+# Academia
 
-Sistema de gerenciamento de academias desenvolvido como projeto acadêmico, utilizando Node.js, Fastify, Prisma ORM e PostgreSQL.
+API REST acadêmica para gerenciamento de uma academia. O projeto utiliza Node.js, Fastify, Prisma ORM 7 e PostgreSQL hospedado no Neon. A modelagem existente contém sete entidades: Aluno, Instrutor, Plano, Contratacao, Exercicio, FichaTreino e ItemFicha.
 
-O objetivo é desenvolver uma API REST capaz de gerenciar alunos, instrutores, planos, contratações e fichas de treinamento.
+## Requisitos
 
-## 📌 Sobre o projeto
+- Node.js 22 ou versão compatível com as dependências do projeto
+- PostgreSQL/Neon configurado
 
-O sistema tem como finalidade organizar as principais operações de uma academia, permitindo o gerenciamento de alunos, planos de mensalidade, instrutores, exercícios e fichas de treino.
+## Configuração
 
-O projeto está em desenvolvimento e segue os requisitos definidos na atividade acadêmica.
+1. Instale as dependências:
 
-## 🚀 Tecnologias utilizadas
+   ```bash
+   npm install
+   ```
 
-- **Node.js** — Ambiente de execução JavaScript.
-- **Fastify** — Framework para construção da API.
-- **Prisma ORM 7** — Mapeamento objeto-relacional.
-- **PostgreSQL** — Banco de dados relacional.
-- **Neon** — Hospedagem do banco PostgreSQL.
-- **JavaScript** — Linguagem principal.
+2. Crie `.env` na raiz, sem enviar esse arquivo ao Git:
 
-## 🗂️ Estrutura do projeto
+   ```env
+   DATABASE_URL="URL_POOLED_DO_NEON"
+   DIRECT_URL="URL_DIRECT_DO_NEON"
+   ```
 
-```text
-academia/
-│
-├── prisma/
-│   ├── migrations/
-│   └── schema.prisma
-│
-├── generated/
-│   └── prisma/
-│
-├── src/
-│   ├── config/
-│   ├── controllers/
-│   ├── lib/
-│   │   ├── prisma.js
-│   │   └── schemas.js
-│   ├── middlewares/
-│   ├── repositories/
-│   ├── routes/
-│   │   └── alunos.js
-│   ├── services/
-│   ├── utils/
-│   ├── app.js
-│   ├── banco.js
-│   └── server.js
-│
-├── .env
-├── .gitignore
-├── package.json
-├── package-lock.json
-└── README.md
-```
+3. Gere o Prisma Client e confira a conexão/migrations:
 
-## 🗄️ Modelagem do banco de dados
+   ```bash
+   npx prisma generate
+   npx prisma migrate status
+   ```
 
-O banco de dados possui sete entidades principais:
+4. Inicie a API:
 
-| Entidade | Responsabilidade |
-|---|---|
-| Aluno | Armazenar os dados dos alunos |
-| Instrutor | Gerenciar os instrutores |
-| Plano | Armazenar os planos da academia |
-| Contratacao | Registrar as contratações dos planos |
-| Exercicio | Cadastrar os exercícios disponíveis |
-| FichaTreino | Gerenciar as fichas de treinamento |
-| ItemFicha | Relacionar exercícios às fichas |
+   ```bash
+   npm run dev
+   ```
 
-### Relacionamentos
+O servidor escuta na porta `3000`. Use `GET http://localhost:3000/ping` para conferir se está ativo.
 
-- Um aluno pode possuir várias contratações.
-- Um plano pode estar associado a várias contratações.
-- Um aluno pode possuir várias fichas de treino.
-- Um instrutor pode elaborar várias fichas.
-- Uma ficha pode possuir vários exercícios.
-- Um exercício pode aparecer em várias fichas.
+## Rotas
 
-A entidade `ItemFicha` representa o relacionamento entre fichas e exercícios, armazenando séries, repetições, carga recomendada e ordem.
+Todas as entidades oferecem `GET` de coleção, `GET /:id`, `POST`, `PUT /:id`, `PATCH /:id` e `DELETE /:id`.
 
-## ⚙️ Instalação e configuração
-
-### 1. Clonar o repositório
-
-```bash
-git clone https://github.com/SEU-USUARIO/academia.git
-```
-
-### 2. Entrar na pasta
-
-```bash
-cd academia
-```
-
-### 3. Instalar as dependências
-
-```bash
-npm install
-```
-
-### 4. Configurar as variáveis de ambiente
-
-Crie um arquivo `.env` na raiz do projeto:
-
-```env
-DATABASE_URL="SUA_URL_POOLED_DO_NEON"
-DIRECT_URL="SUA_URL_DIRECT_DO_NEON"
-```
-
-Substitua os valores pelas URLs de conexão do seu banco PostgreSQL na Neon.
-
-**Importante:** nunca publique suas credenciais ou o arquivo `.env` no GitHub.
-
-### 5. Gerar o Prisma Client
-
-```bash
-npx prisma generate
-```
-
-### 6. Executar as migrations
-
-```bash
-npx prisma migrate dev
-```
-
-### 7. Iniciar o servidor
-
-```bash
-npm run dev
-```
-
-O servidor utiliza a porta `3000`.
-
-## 🌐 API
-
-### Alunos
-
-| Método | Endpoint | Descrição |
+| Entidade | Caminho base | Observação |
 |---|---|---|
-| GET | `/alunos` | Listar alunos |
-| GET | `/alunos/:id` | Consultar aluno por ID |
-| POST | `/alunos` | Cadastrar aluno |
-| PATCH | `/alunos/:id` | Atualizar aluno |
+| Aluno | `/alunos` | E-mail único |
+| Instrutor | `/instrutores` | E-mail único |
+| Plano | `/planos` | Valor não negativo e duração positiva |
+| Contratação | `/contratacoes` | Exige aluno e plano existentes; fim não pode anteceder início |
+| Exercício | `/exercicios` | Nome obrigatório |
+| Ficha de treino | `/fichas-treino` | Exige aluno e instrutor existentes |
+| Item de ficha | `/itens-ficha` | Exige ficha e exercício existentes; séries, repetições e ordem positivas |
 
-### Exemplo de cadastro
+### Códigos HTTP
 
-Requisição:
+- `200`: consulta ou atualização concluída
+- `201`: registro criado
+- `204`: registro excluído
+- `400`: ID, corpo ou valor inválido
+- `404`: registro não encontrado
+- `409`: e-mail duplicado, referência inválida ou exclusão bloqueada por relacionamento
 
-```http
-POST /alunos
-Content-Type: application/json
-```
+Os corpos enviados devem ser JSON. IDs das relações devem referenciar registros existentes. `PUT` substitui os campos editáveis; `PATCH` altera apenas os campos enviados e rejeita corpo vazio.
 
-Corpo:
+## Testes no Thunder Client
+
+Configure a URL base como `http://localhost:3000`. Para testar as relações, crie registros nesta ordem: aluno, instrutor, plano e exercício; depois contratação, ficha e item de ficha. Exclua na ordem inversa para respeitar as chaves estrangeiras.
+
+Exemplo de aluno (`POST /alunos`):
 
 ```json
 {
-  "nome": "João Silva",
-  "email": "joao@email.com",
-  "telefone": "82999999999"
+  "nome": "Aluno de teste",
+  "email": "aluno.teste@example.com",
+  "telefone": "11999999999"
 }
 ```
 
-## 📋 Requisitos e funcionalidades planejadas
+Exemplo de plano (`POST /planos`):
 
-- [x] Modelagem inicial do banco de dados.
-- [x] Configuração do PostgreSQL na Neon.
-- [x] Configuração do Prisma ORM.
-- [x] Primeira migration.
-- [x] Configuração do servidor Fastify.
-- [x] Estrutura inicial das rotas de alunos.
-- [ ] Testes completos das operações de alunos.
-- [ ] CRUD de instrutores.
-- [ ] CRUD de planos.
-- [ ] Gerenciamento de contratações.
-- [ ] CRUD de exercícios.
-- [ ] Criação e gerenciamento de fichas de treino.
-- [ ] Gerenciamento dos itens das fichas.
-- [ ] Consultas obrigatórias.
-- [ ] Implementação das regras de negócio.
-- [ ] Seed e dados de teste.
-- [ ] Testes completos da API.
-- [ ] Documentação das consultas SQL.
+```json
+{
+  "nome": "Mensal",
+  "descricao": "Acesso à academia por 30 dias",
+  "valor": 89.9,
+  "duracao_dias": 30
+}
+```
 
-## 🧪 Testes
+Exemplo de contratação (`POST /contratacoes`), substituindo IDs por registros existentes:
 
-Os endpoints serão testados utilizando o Thunder Client, verificando respostas, validações e operações no banco de dados.
+```json
+{
+  "id_aluno": 1,
+  "id_plano": 1,
+  "data_inicio": "2026-12-01T10:00:00.000Z",
+  "data_fim": "2026-12-31T10:00:00.000Z"
+}
+```
 
-## 👨‍💻 Desenvolvimento
+Repita GET, GET por ID, PUT, PATCH e DELETE para cada caminho da tabela. Verifique também e-mail repetido (409), datas fora de ordem (400), referências inexistentes (409), corpo vazio no PATCH (400) e IDs inexistentes (404). Use registros de teste próprios e remova-os ao terminar.
 
-Projeto acadêmico desenvolvido em equipe, com foco em modelagem de banco de dados, desenvolvimento de APIs REST e utilização de tecnologias modernas do ecossistema JavaScript.
+## Prisma e migrations
 
-## 📅 Prazo de entrega
+O schema Prisma está em `prisma/schema.prisma`; o Prisma Client gerado fica em `generated/prisma` e é ignorado pelo Git. A conexão usa o adaptador PostgreSQL em `src/lib/prisma.js`.
 
-**06 de dezembro de 2026.**
+No Neon, `npx prisma migrate status` informou que as duas migrations estão aplicadas e o schema está atualizado. A revisão também encontrou divergência no checksum da migration `20261118002946_init` e texto que não parece SQL nesse arquivo. Como ela consta aplicada no banco, não foi reescrita; alterar migrations históricas pode quebrar a validação em bancos já existentes. A execução de `migrate deploy` em um banco novo ainda precisa ser verificada depois de definir uma estratégia segura de baseline.
 
----
+## Organização
 
-*Projeto em desenvolvimento.*
+- `src/routes/`: rotas HTTP por entidade
+- `src/lib/schemas.js`: schemas de validação Fastify
+- `src/lib/prisma.js`: conexão do Prisma Client com PostgreSQL
+- `prisma/schema.prisma`: entidades e relacionamentos
+- `prisma/migrations/`: histórico de migrations
+
+`src/server.js` registra as sete rotas e inicia o Fastify.
+
