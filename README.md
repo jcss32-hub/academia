@@ -104,7 +104,33 @@ Repita GET, GET por ID, PUT, PATCH e DELETE para cada caminho da tabela. Verifiq
 
 O schema Prisma está em `prisma/schema.prisma`; o Prisma Client gerado fica em `generated/prisma` e é ignorado pelo Git. A conexão usa o adaptador PostgreSQL em `src/lib/prisma.js`.
 
-No Neon, `npx prisma migrate status` informou que as duas migrations estão aplicadas e o schema está atualizado. A revisão também encontrou divergência no checksum da migration `20261118002946_init` e texto que não parece SQL nesse arquivo. Como ela consta aplicada no banco, não foi reescrita; alterar migrations históricas pode quebrar a validação em bancos já existentes. A execução de `migrate deploy` em um banco novo ainda precisa ser verificada depois de definir uma estratégia segura de baseline.
+No Neon, `npx prisma migrate status` informou que as duas migrations estão aplicadas e `prisma migrate diff` confirmou que o schema está sincronizado. A revisão encontrou divergência no checksum da migration `20261118002946_init` e texto que não parece SQL nesse arquivo. Como ela consta aplicada no Neon, o histórico não foi reescrito.
+
+### Inicializar um banco PostgreSQL vazio
+
+`prisma/baseline.sql` é um snapshot SQL gerado do schema atual para bancos novos. Use estes passos **somente em um banco vazio** com as variáveis `DATABASE_URL` e `DIRECT_URL` configuradas para esse novo banco:
+
+1. Criar as tabelas e relações do snapshot:
+
+   ```bash
+   npx prisma db execute --file prisma/baseline.sql
+   ```
+
+2. Registrar as migrations históricas como já aplicadas, pois o baseline já contém o schema resultante delas:
+
+   ```bash
+   npx prisma migrate resolve --applied 20261118002946_init
+   npx prisma migrate resolve --applied 20261118003804_init
+   ```
+
+3. Confirmar a instalação:
+
+   ```bash
+   npx prisma migrate status
+   npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
+   ```
+
+Não execute o arquivo `baseline.sql` no Neon atual: ele já contém essas tabelas. Para alterações futuras, crie migrations novas e aplique-as normalmente; não sobrescreva o snapshot inicial nem as migrations históricas.
 
 ## Organização
 
