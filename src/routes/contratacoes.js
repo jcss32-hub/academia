@@ -54,7 +54,11 @@ export default async function contratacoesRoutes(app) {
 
       try {
         const contratacao = await prisma.contratacao.create({
-          data: request.body,
+          data: {
+            ...request.body,
+            data_inicio: new Date(request.body.data_inicio),
+            data_fim: new Date(request.body.data_fim),
+          },
         });
         return reply.code(201).send(contratacao);
       } catch (erro) {
@@ -78,7 +82,12 @@ export default async function contratacoesRoutes(app) {
       try {
         return await prisma.contratacao.update({
           where: { id: Number(request.params.id) },
-          data: { ...request.body, status: request.body.status ?? "ATIVA" },
+          data: {
+            ...request.body,
+            data_inicio: new Date(request.body.data_inicio),
+            data_fim: new Date(request.body.data_fim),
+            status: request.body.status ?? "ATIVA",
+          },
         });
       } catch (erro) {
         if (erro.code === "P2025") {
@@ -113,7 +122,15 @@ export default async function contratacoesRoutes(app) {
 
         return await prisma.contratacao.update({
           where: { id },
-          data: request.body,
+          data: {
+            ...request.body,
+            ...(request.body.data_inicio && {
+              data_inicio: new Date(request.body.data_inicio),
+            }),
+            ...(request.body.data_fim && {
+              data_fim: new Date(request.body.data_fim),
+            }),
+          },
         });
       } catch (erro) {
         if (erro.code === "P2025") {
